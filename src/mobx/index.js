@@ -1,34 +1,17 @@
-// 装饰器
-// 类装饰
-function add(target) {
-  target.flag = 'ok'
-}
+import {observable, autorun} from '../lib/mobx';
 
-// 属性装饰
-function readonly(target, key, descriptor) {
-  console.log(target, key, descriptor);
-  descriptor.writable = false;
-  // return descriptor; // 默认会返回 descriptor
-}
+// observable 把普通的数据变成可观察的数据
+// 利用 Object.defineProperty(o, propertyKey, attributes)，不支持监控数组，只能监控已有的属性 
+// 或 new Proxy(target, handler)
+const o = observable({name: 'test', children: {name: 'child'}});
+console.dir(o);
 
-// 方法装饰
-function extendsSay(target, key, descriptor) {
-  const oldSay = descriptor.value;
-  descriptor.value = () => {
-    console.log('start run');
-    oldSay();
-    console.log('finished run');
-  }
-}
-@add
-class Circle {
-  @readonly PI = 3.14
-  @extendsSay run() {
-    console.log('run')
-  }
-}
+// 自动运行，会先运行一次，打印test
+// 属性的值变化后，会执行一次，打印hello
+autorun(() => {
+  console.log(o.name);
+})
 
-const circle = new Circle();
-// circle.PI = 3.141526; // Cannot assign to read only property 'PI' of object '#<Circle>'
-circle.run();
-console.log(Circle.flag, circle)
+// 属性变化
+o.name = 'hello';
+o.children.name = 'world'
