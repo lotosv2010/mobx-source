@@ -1,17 +1,19 @@
-import {useState} from 'react';
-import '../mobx/index';
-function Counter() {
-  const [state, setState] = useState({number: 0});
-  
-  const handleClick = () => {
-    setState({number: state.number + 1})
+import {Component} from 'react';
+import {observer, inject} from 'mobx-react';
+@inject('store')
+@observer
+class Counter extends Component {
+  constructor(props) {
+    super(props);
+    console.log(props)
   }
-
-  // console.log(state);
-
-  return <div>
-    <p>{state.number}</p>
-    <button onClick={handleClick}>+</button>
-  </div>
+  render() {
+    const { store } = this.props;
+    return <div>
+        <p>{store.num}</p>
+        <p>{store.type}</p>
+        <button onClick={() => store.add()}>+</button>
+      </div>
+  }
 }
 export default Counter;
